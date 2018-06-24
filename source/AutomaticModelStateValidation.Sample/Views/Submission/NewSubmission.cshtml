@@ -1,0 +1,9 @@
+﻿@model AutomaticModelStateValidation.Sample.Models.NewSubmissionViewModel
+
+<div>
+    <form asp-controller="Form" asp-action="PostForm" method="post">
+        <input asp-for="Name" name="Name" /><input type="submit" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </form>
+</div>
+
