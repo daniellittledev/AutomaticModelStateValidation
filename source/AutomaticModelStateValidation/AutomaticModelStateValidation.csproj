@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Description>Automatically validate ModelState for Controllers using Views</Description>
-    <VersionPrefix>0.1.0</VersionPrefix>
+    <VersionPrefix>0.2.0</VersionPrefix>
     <Authors>Daniel Little</Authors>
     <AssemblyName>AutomaticModelStateValidation</AssemblyName>
     <PackageId>AutomaticModelStateValidation</PackageId>

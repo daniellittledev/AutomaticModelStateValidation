@@ -18,36 +18,31 @@ namespace AutomaticModelStateValidation
 
         public AutoValidateModelAttribute(string action)
         {
-            this.action = action;
+            this.action = action ?? throw new ArgumentNullException(nameof(action));
         }
 
         public AutoValidateModelAttribute(string controller, string action)
         {
-            this.controller = controller;
-            this.action = action;
+            this.controller = controller ?? throw new ArgumentNullException(nameof(controller));
+            this.action = action ?? throw new ArgumentNullException(nameof(action));
+        }
+
+        string SansController(string controllerName)
+        {
+            if (controllerName.EndsWith("Controller")) {
+                return controllerName.Substring(0, controllerName.Length - 10);
+            }
+            return controllerName;
         }
 
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            string SansController(string controllerName)
-            {
-                if (controllerName.EndsWith("Controller"))
-                {
-                    return controllerName.Substring(0, controllerName.Length - 10);
-                }
-
-                return controllerName;
-            }
+            T GetService<T>() => (T)context.HttpContext.RequestServices.GetService(typeof(T));
 
             if (!context.ModelState.IsValid)
             {
-                var modelState = context.ModelState;
-                var services = context.HttpContext.RequestServices;
                 var controllerName = SansController(controller ?? context.Controller.GetType().Name);
-
-                var actionDescriptorCollectionProvider =
-                    (IActionDescriptorCollectionProvider) services.GetService(
-                        typeof(IActionDescriptorCollectionProvider));
+                var actionDescriptorCollectionProvider = GetService<IActionDescriptorCollectionProvider>();
 
                 var controllerActionDescriptors =
                     actionDescriptorCollectionProvider
@@ -65,10 +60,10 @@ namespace AutomaticModelStateValidation
                 }
 
                 var actionContext =
-                    new ActionContext(context.HttpContext, context.RouteData, controllerActionDescriptor, modelState);
+                    new ActionContext(context.HttpContext, context.RouteData, controllerActionDescriptor, context.ModelState);
 
-                var actionInvokerFactory = (IActionInvokerFactory) services.GetService(typeof(IActionInvokerFactory));
-                var actionContextAccessor = (IActionContextAccessor) services.GetService(typeof(IActionContextAccessor));
+                var actionInvokerFactory = GetService<IActionInvokerFactory>();
+                var actionContextAccessor = GetService<IActionContextAccessor>();
 
                 if (actionContextAccessor != null)
                 {
