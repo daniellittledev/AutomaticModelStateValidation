@@ -44,15 +44,11 @@ namespace AutomaticModelStateValidation
                 var controllerName = SansController(controller ?? context.Controller.GetType().Name);
                 var actionDescriptorCollectionProvider = GetService<IActionDescriptorCollectionProvider>();
 
-                var controllerActionDescriptors =
+                var controllerActionDescriptor =
                     actionDescriptorCollectionProvider
                     .ActionDescriptors.Items
-                    .OfType<ControllerActionDescriptor>();
-
-                var controllerActionDescriptor =
-                    controllerActionDescriptors
-                    .Where(x => x.ControllerName == controllerName && x.ActionName == action)
-                    .FirstOrDefault();
+                    .OfType<ControllerActionDescriptor>()
+                    .FirstOrDefault(x => x.ControllerName == controllerName && x.ActionName == action);
 
                 if (controllerActionDescriptor == null)
                 {
